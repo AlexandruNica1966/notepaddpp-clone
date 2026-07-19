@@ -7,6 +7,8 @@ AppDir/
 appimagetool*
 *.AppImage
 *.exe
+Notepad++Qt
+Notepad++Qt-*
 dist-usb/
 .pytest_cache/
 python-installer.exe
