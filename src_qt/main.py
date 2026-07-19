@@ -6,7 +6,14 @@ A full-featured text editor using PyQt5 + QScintilla.
 Run: python3 main.py
 """
 
+import os
 import sys
+
+# ── High-DPI / Retina display support ──────────────────────────────
+# Must be set BEFORE any PyQt5 imports to take effect on Linux/X11.
+os.environ.setdefault("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
+os.environ.setdefault("QT_ENABLE_HIGHDPI_SCALING", "1")
+
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPalette, QColor
