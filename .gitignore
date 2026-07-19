@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.spec
+build/
+dist/
+AppDir/
+appimagetool*
+*.AppImage
+*.exe
+dist-usb/
+.pytest_cache/
+python-installer.exe

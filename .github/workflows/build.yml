@@ -1,0 +1,74 @@
+name: Build Multi-Platform
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyQt5 QScintilla pyinstaller
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --onefile --name="Notepad++Qt" `
+            --hidden-import=PyQt5 `
+            --hidden-import=PyQt5.Qsci `
+            --hidden-import=PyQt5.sip `
+            --hidden-import=json `
+            --noconsole src_qt/main.py
+
+      - name: Upload Windows EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: Notepad++Qt-Windows
+          path: dist/Notepad++Qt.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pyqt5 python3-pyqt5.qsci
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install pyinstaller
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --onefile --name="Notepad++Qt" \
+            --hidden-import=PyQt5 \
+            --hidden-import=PyQt5.Qsci \
+            --hidden-import=PyQt5.sip \
+            --hidden-import=json \
+            src_qt/main.py
+
+      - name: Upload Linux binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: Notepad++Qt-Linux
+          path: dist/Notepad++Qt
