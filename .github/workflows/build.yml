@@ -67,8 +67,33 @@ jobs:
             --hidden-import=json \
             src_qt/main.py
 
-      - name: Upload Linux binary
+      - name: Package as AppImage
+        run: |
+          mkdir -p AppDir/usr/bin
+          cp dist/Notepad++Qt AppDir/usr/bin/
+          cat > AppDir/AppRun << 'RUNEOF'
+          #!/bin/bash
+          HERE="$(dirname "$(readlink -f "${0}")")"
+          export PATH="${HERE}/usr/bin:${PATH}"
+          exec "${HERE}/usr/bin/Notepad++Qt" "$@"
+          RUNEOF
+          chmod +x AppDir/AppRun
+          cat > AppDir/nppqt.desktop << 'DESKEOF'
+          [Desktop Entry]
+          Type=Application
+          Name=Notepad++ Clone
+          Exec=Notepad++Qt
+          Icon=nppqt
+          Terminal=false
+          Categories=Development;TextEditor;
+          DESKEOF
+          printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82' > AppDir/nppqt.png
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
+          ./appimagetool-x86_64.AppImage --appimage-extract-and-run AppDir Notepad++Qt-x86_64.AppImage
+
+      - name: Upload AppImage
         uses: actions/upload-artifact@v4
         with:
-          name: Notepad++Qt-Linux
-          path: dist/Notepad++Qt
+          name: Notepad++Qt-Linux-AppImage
+          path: Notepad++Qt-x86_64.AppImage
